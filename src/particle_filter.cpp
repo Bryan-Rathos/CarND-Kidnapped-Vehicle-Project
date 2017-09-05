@@ -133,7 +133,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     auto part_y = particles[p_num].y;
     auto part_theta = particles[p_num].theta;
     
-    // These are the observations wihin sensor range from the predicted particle position to map landmarks
+    // These are the observations within sensor range from the predicted particle position to map landmarks
     vector<LandmarkObs> predicted_obs_in_range;
     
     for (int j = 0; j < map_landmarks.landmark_list.size(); j++)
@@ -187,7 +187,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
       // Calculate weight for this observation with multivariate Gaussian
       double sd_x = std_landmark[0];
       double sd_y = std_landmark[1];
-      double obs_w = ( 1 /(2 * M_PI * sd_x * sd_y)) * exp( -( pow(ob_x - pr_x,2)/(2*pow(sd_x, 2)) + (pow(ob_y - pr_y,2)/(2 * pow(sd_y, 2)))) );
+      double obs_w = ( 1 /(2 * M_PI * sd_x * sd_y)) * exp( -( pow(ob_x - pr_x, 2)/(2 * pow(sd_x, 2)) + (pow(ob_y - pr_y, 2)/(2 * pow(sd_y, 2)))));
       
       // product of this obersvation weight with total observations weight
       particles[p_num].weight *= obs_w;
@@ -200,7 +200,17 @@ void ParticleFilter::resample()
 	// TODO: Resample particles with replacement with probability proportional to their weight. 
 	// NOTE: You may find std::discrete_distribution helpful here.
 	//   http://en.cppreference.com/w/cpp/numeric/random/discrete_distribution
-
+  
+  discrete_distribution<int> dist_weights {weights.begin(), weights.end()};
+  vector<Particle> new_particles;
+  
+  for (int i=0; i < num_particles; i++)   // i is just a counter
+  {
+    int new_particle_index = dist_weights(gen);
+    Particle new_particle = particles[new_particle_index];
+    new_particles.push_back(new_particle);
+  }
+  particles = new_particles;
 }
 
 Particle ParticleFilter::SetAssociations(Particle particle, std::vector<int> associations, std::vector<double> sense_x, std::vector<double> sense_y)
