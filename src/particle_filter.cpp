@@ -31,7 +31,7 @@ void ParticleFilter::init(double x, double y, double theta, double std[])
 	// NOTE: Consult particle_filter.h for more information about this method (and others in this file).
   
   //default_random_engine gen;
-  num_particles  = 300;
+  num_particles  = 150;
   
   double std_x = std[0];
   double std_y = std[1];
@@ -193,12 +193,18 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     // Reinitialize particle weight
     particles[p_num].weight = 1.0;
     
+    // associate observations to map landmarks
+    vector<int> associations;
+    vector<double> obs_x;
+    vector<double> obs_y;
+    
     for (unsigned int m = 0; m < transform_car2map.size(); m++)
     {
       // Placeholders for observation and associated prediction coordinates
       double ob_x, ob_y, pr_x, pr_y;
       ob_x = transform_car2map[m].x;
       ob_y = transform_car2map[m].y;
+      
       
       int associated_prediction = transform_car2map[m].id;
       
@@ -209,9 +215,12 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
         {
           pr_x = predicted_obs_in_range[n].x;
           pr_y = predicted_obs_in_range[n].y;
+          obs_x.push_back(pr_x);
+          obs_y.push_back(pr_y);
         }
       }
-    
+      associations.push_back(associated_prediction);
+      
       // Calculate weight for this observation with multivariate Gaussian
       double sd_x = std_landmark[0];
       double sd_y = std_landmark[1];
@@ -220,6 +229,7 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
       // product of this obersvation weight with total observations weight
       particles[p_num].weight *= obs_w;
     }
+    particles[p_num] = SetAssociations(particles[p_num], associations, obs_x, obs_y);
   }
 }
 
@@ -228,18 +238,6 @@ void ParticleFilter::resample()
 	// TODO: Resample particles with replacement with probability proportional to their weight. 
 	// NOTE: You may find std::discrete_distribution helpful here.
 	//   http://en.cppreference.com/w/cpp/numeric/random/discrete_distribution
-  
-  /*discrete_distribution<int> dist_weights {weights.begin(), weights.end()};
-  vector<Particle> new_particles;
-  
-  for (int i=0; i < num_particles; i++)   // i is just a counter
-  {
-    int new_particle_index = dist_weights(gen);
-    Particle new_particle = particles[new_particle_index];
-    new_particles.push_back(new_particle);
-  }
-  particles = new_particles;
-  */
   
   vector<Particle> new_particles;
   
