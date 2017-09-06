@@ -112,8 +112,6 @@ void ParticleFilter::dataAssociation(std::vector<LandmarkObs> predicted, std::ve
 	//   observed measurement to this particular landmark.
 	// NOTE: this method will NOT be called by the grading code. But you will probably find it useful to 
 	//   implement this method and use it as a helper during the updateWeights phase.
-
-  double p2lm_dist;
   
   for (int i=0; i < observations.size(); i++)
   { // loop over observations
@@ -122,7 +120,7 @@ void ParticleFilter::dataAssociation(std::vector<LandmarkObs> predicted, std::ve
     
     for (int j=0; j < predicted.size(); j++)
     {
-      p2lm_dist = dist(observations[i].x, observations[i].y, predicted[j].x, predicted[j].y);
+      double p2lm_dist = dist(observations[i].x, observations[i].y, predicted[j].x, predicted[j].y);
       
       if (p2lm_dist < min_dist)
       {
