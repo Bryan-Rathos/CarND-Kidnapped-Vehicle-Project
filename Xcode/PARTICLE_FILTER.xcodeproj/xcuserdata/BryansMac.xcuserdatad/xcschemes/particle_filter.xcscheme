@@ -63,7 +63,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "../data/map_data.txt"
+            argument = "../../data/map_data.txt"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
